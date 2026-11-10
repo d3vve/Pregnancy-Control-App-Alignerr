@@ -39,8 +39,8 @@ class MeasurementWorker(context: Context, params: WorkerParameters) : Worker(con
 
         val notification = NotificationCompat.Builder(applicationContext, channelId)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("Czas na pomiary!")
-            .setContentText("Nie zapomnij dzisiaj uzupełnić ciśnienia, wagi i cukru w aplikacji.")
+            .setContentTitle("Measurement time!")
+            .setContentText("Do not forget to complete measurements")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
 

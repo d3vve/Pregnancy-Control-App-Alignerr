@@ -35,7 +35,7 @@
         android:layout_height="60dp"
         android:layout_marginBottom="16dp"
         android:backgroundTint="#DA54ED"
-        android:text="Kalendarz Wizyt"
+        android:text="Calendar"
         app:iconTint="#3C95AB" />
 
     <Button
@@ -44,7 +44,7 @@
         android:layout_height="60dp"
         android:layout_marginBottom="16dp"
         android:backgroundTint="#DA54ED"
-        android:text="Rozwój Dziecka" />
+        android:text="Baby's development" />
 
     <Button
         android:id="@+id/btnNotes"
@@ -52,7 +52,7 @@
         android:layout_height="60dp"
         android:layout_marginBottom="16dp"
         android:backgroundTint="#DA54ED"
-        android:text="Notatki i Objawy" />
+        android:text="Notes and symptoms" />
 
     <Button
         android:id="@+id/btnReport"

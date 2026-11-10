@@ -14,7 +14,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         private const val DATABASE_NAME = "PregnancyApp.db"
         private const val DATABASE_VERSION = 4
 
-        // notatki
+        // notes
         private const val TABLE_NOTES = "notes_table"
         private const val COLUMN_ID = "id"
         private const val COLUMN_CONTENT = "content"
@@ -22,19 +22,19 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         private const val COLUMN_WEEK = "week"
         private const val COLUMN_IS_REPORTED = "is_reported"
 
-        // wizyty
+        // visits
         private const val TABLE_VISITS = "visits_table"
         private const val COLUMN_VISIT_ID = "visit_id"
         private const val COLUMN_VISIT_DATE = "visit_date"
         private const val COLUMN_VISIT_DESC = "description"
 
-        // raporty
+        // reports
         private const val TABLE_REPORTS = "reports_table"
         private const val COLUMN_REPORT_ID = "report_id"
         private const val COLUMN_REPORT_DATE = "report_date"
         private const val COLUMN_REPORT_CONTENT = "report_content"
 
-        // pomiary
+        // measurements
         private const val TABLE_MEASUREMENTS = "measurements_table"
         private const val COLUMN_MEAS_ID = "meas_id"
         private const val COLUMN_MEAS_DATE = "meas_date"
@@ -161,7 +161,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             do {
                 val date = cursor.getString(1)
                 val content = cursor.getString(2)
-                reportsList.add("Raport z dnia: $date\n\n$content")
+                reportsList.add("Report from: $date\n\n$content")
             } while (cursor.moveToNext())
         }
         cursor.close()
@@ -202,15 +202,15 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 val bp = cursor.getString(2)
                 val weight = cursor.getString(3)
                 val sugar = cursor.getString(4)
-                builder.append("• Data: $date | Ciśnienie: $bp | Waga: $weight kg | Cukier: $sugar mg/dL\n")
+                builder.append("• Date: $date | Blood pressure: $bp | Weight: $weight kg | Sugar: $sugar mg/dL\n")
             } while (cursor.moveToNext())
         }
         cursor.close()
         db.close()
-        return if (builder.isEmpty()) "Brak zapisanych pomiarów." else builder.toString()
+        return if (builder.isEmpty()) "No saved measurements." else builder.toString()
     }
 
-    // pobiera tylko te notatki, które jeszcze nie były raportowane (is_reported = 0)
+    // fetches only those notes that have not yet been reported (is_reported = 0)
     fun getUnreportedNotes(): List<String> {
         val notesList = ArrayList<String>()
         val selectQuery = "SELECT * FROM $TABLE_NOTES WHERE $COLUMN_IS_REPORTED = 0 ORDER BY $COLUMN_DATE ASC"
@@ -231,7 +231,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return notesList
     }
 
-    // pobiera tylko te pomiary, które jeszcze nie były raportowane (is_reported = 0)
+    // fetches only those measurements that have not yet been reported (is_reported = 0)
     fun getUnreportedMeasurements(): String {
         val builder = StringBuilder()
         val selectQuery = "SELECT * FROM $TABLE_MEASUREMENTS WHERE $COLUMN_IS_REPORTED = 0 ORDER BY $COLUMN_MEAS_ID ASC"
@@ -244,15 +244,15 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 val bp = cursor.getString(2)
                 val weight = cursor.getString(3)
                 val sugar = cursor.getString(4)
-                builder.append("• Data: $date | Ciśnienie: $bp | Waga: $weight kg | Cukier: $sugar mg/dL\n")
+                builder.append("• Date: $date | Blood pressure: $bp | Weight: $weight kg | Sugar: $sugar mg/dL\n")
             } while (cursor.moveToNext())
         }
         cursor.close()
         db.close()
-        return builder.toString() // Zwraca puste, jeśli nie ma nowych
+        return builder.toString() // Returns empty if there are no new ones
     }
 
-    // po wygenerowaniu raportu zamienia status wszystkich dodanych właśnie rzeczy na zaraportowane
+    // after generating the report, changes the status of all newly added items to reported
     fun markDataAsReported() {
         val db = this.writableDatabase
         db.execSQL("UPDATE $TABLE_NOTES SET $COLUMN_IS_REPORTED = 1 WHERE $COLUMN_IS_REPORTED = 0")
@@ -260,14 +260,14 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.close()
     }
 
-    // usuwanie notatek
+    // deleting notes
     fun deleteNote(id: Int) {
         val db = this.writableDatabase
         db.delete(TABLE_NOTES, "$COLUMN_ID = ?", arrayOf(id.toString()))
         db.close()
     }
 
-    // aktualizowanie notatek
+    // updating notes
     fun updateNote(id: Int, newContent: String) {
         val db = this.writableDatabase
         val values = ContentValues().apply { put(COLUMN_CONTENT, newContent) }
@@ -275,7 +275,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.close()
     }
 
-    // pobieranie wszystkich notatek wraz z ich ID
+    // fetching all notes along with their IDs
     fun getNotesWithIds(): List<NoteItem> {
         val list = mutableListOf<NoteItem>()
         val db = this.readableDatabase
@@ -325,24 +325,24 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.close()
     }
 
-    // pobieranie wszystkich elementów do kalendarza
+    // fetching all elements for the calendar
     fun getCalendarItems(): List<CalendarItem> {
         val list = mutableListOf<CalendarItem>()
         val db = this.readableDatabase
 
-        // wizyty
+        // visits
         val cursorVisits = db.rawQuery("SELECT * FROM $TABLE_VISITS", null)
         if (cursorVisits.moveToFirst()) {
             do {
                 val id = cursorVisits.getInt(0)
                 val date = cursorVisits.getString(1)
                 val desc = cursorVisits.getString(2)
-                list.add(CalendarItem(id, true, "WIZYTA: $date - $desc", date, desc))
+                list.add(CalendarItem(id, true, "VISIT: $date\n$desc", date, desc))
             } while (cursorVisits.moveToNext())
         }
         cursorVisits.close()
 
-        // pomiary
+        // measurements
         val cursorMeas = db.rawQuery("SELECT * FROM $TABLE_MEASUREMENTS", null)
         if (cursorMeas.moveToFirst()) {
             do {
@@ -351,17 +351,17 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 val bp = cursorMeas.getString(2)
                 val weight = cursorMeas.getString(3)
                 val sugar = cursorMeas.getString(4)
-                list.add(CalendarItem(id, false, "POMIAR: $date | Ciśnienie: $bp | Waga: $weight kg | Cukier: $sugar", date, bp, weight, sugar))
+                list.add(CalendarItem(id, false, "MEASUREMENT: $date | Blood pressure: $bp | Weight: $weight kg | Sugar: $sugar", date, bp, weight, sugar))
             } while (cursorMeas.moveToNext())
         }
         cursorMeas.close()
         db.close()
 
-        // Sortujemy by najpierw były wizyty, potem pomiary
+        // Sort to have visits first, then measurements
         return list.sortedBy { it.isVisit }.reversed()
     }
 
-    // usuwanie i pobieranie raportów wraz z ID
+    // deleting and fetching reports along with their IDs
     fun deleteReport(id: Int) {
         val db = this.writableDatabase
         db.delete(TABLE_REPORTS, "$COLUMN_REPORT_ID = ?", arrayOf(id.toString()))
@@ -380,7 +380,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 val date = cursor.getString(1)
                 val content = cursor.getString(2)
 
-                val display = "Raport z dnia: $date\n\n$content"
+                val display = "Report from: $date\n\n$content"
                 list.add(ReportItem(id, display, content))
             } while (cursor.moveToNext())
         }
@@ -400,9 +400,9 @@ data class CalendarItem(
     val isVisit: Boolean,
     val display: String,
     val date: String,
-    val val1: String, // opis wizyty lub ciśnienie
-    val val2: String = "", // waga
-    val val3: String = ""  // cukier
+    val val1: String, // visit description or blood pressure
+    val val2: String = "", // weight
+    val val3: String = ""  // sugar
 ) {
     override fun toString() = display
 }

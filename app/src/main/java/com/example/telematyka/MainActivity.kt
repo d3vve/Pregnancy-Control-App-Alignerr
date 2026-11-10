@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         val pregnancyWeek = findViewById<TextView>(R.id.PregnancyWeek)
 
         // Wyświetlamy obliczony tydzień
-        pregnancyWeek.text = "Bieżący tydzień ciąży: $currentPregnancyWeek"
+        pregnancyWeek.text = "Current week: $currentPregnancyWeek"
 
 
         val btnCalendar = findViewById<Button>(R.id.btnCalendar)
